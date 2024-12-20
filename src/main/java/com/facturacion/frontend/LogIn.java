@@ -17,17 +17,20 @@ public class LogIn extends ResizablePanel{
         userManager = _userManager;
         setName("Log In");
         
+
+
         setBackground(Color.LIGHT_GRAY);
+        showThis();
     }
 
 
 
     @Override
     protected void resizeElements() {
-
+        final Dimension currentDimension = getSize();
     }
     
     //GUI ELEMENTS
-    
+
     //GUI ELEMENTS
 }

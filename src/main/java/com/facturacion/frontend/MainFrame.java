@@ -15,12 +15,13 @@ public class MainFrame extends JFrame {
     private final CardLayout cardLayout = new CardLayout();
     
     public MainFrame(String FrameName) throws IOException, UserManagerException {
-        UserManager userManager = new UserManager();
-
+        final UserManager userManager = new UserManager();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cardPanel = new JPanel(cardLayout);
         cardPanel.setPreferredSize(minDimension);
         setTitle(FrameName);
+
+        cardPanel.add(new LogIn(cardPanel, cardLayout, minDimension, userManager));
 
         add(cardPanel);
         pack();
