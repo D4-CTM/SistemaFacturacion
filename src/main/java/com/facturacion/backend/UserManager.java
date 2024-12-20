@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Hashtable;
 import java.util.Map;
@@ -23,6 +25,7 @@ public class UserManager {
         File dataDir = new File(userFilePath.getParent().toString());
         if (!dataDir.exists()) {
             dataDir.mkdirs();
+            hideFolder();
         }
 
         File userFile = userFilePath.toFile();
@@ -42,6 +45,14 @@ public class UserManager {
             initializeYaml();
         }
         currentUser = null;
+    }
+
+    private void hideFolder() throws IOException {
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("win")) {
+            Files.setAttribute(userFilePath.getParent(), "dos:hidden", Boolean.TRUE, LinkOption.values());
+        }
     }
 
     private void initializeYaml() throws IOException, UserManagerException {
