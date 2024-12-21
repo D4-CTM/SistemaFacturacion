@@ -124,8 +124,9 @@ public class UserManager {
         }
     }
 
-    public void logIn(String username, String password) throws FileNotFoundException, IOException, UserManagerException {
+    public boolean logIn(String username, String password) throws FileNotFoundException, IOException, UserManagerException {
         currentUser = getUser(username, password);
+        return currentUser != null;
     }
 
     public User getCurrentUser() {

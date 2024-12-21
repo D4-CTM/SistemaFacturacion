@@ -21,7 +21,7 @@ public class MainFrame extends JFrame {
         cardPanel.setPreferredSize(minDimension);
         setTitle(FrameName);
 
-        cardPanel.add(new LogIn(cardPanel, cardLayout, minDimension, userManager));
+        cardPanel.add(new LogIn(cardPanel, cardLayout, userManager));
 
         add(cardPanel);
         pack();
