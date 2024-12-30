@@ -3,6 +3,7 @@ package com.facturacion.frontend;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.facturacion.backend.SQLConection;
 import com.facturacion.backend.UserManager;
 import com.facturacion.backend.UserManager.UserManagerException;
 
@@ -16,6 +17,8 @@ public class MainFrame extends JFrame {
     
     public MainFrame(String FrameName) throws IOException, UserManagerException {
         final UserManager userManager = new UserManager();
+        final SQLConection sql = new SQLConection();
+        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cardPanel = new JPanel(cardLayout);
         cardPanel.setPreferredSize(minDimension);
