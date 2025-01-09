@@ -137,19 +137,19 @@ public class UserManager {
         return currentUser != null;
     }
 
-    class User {
+    public static class User {
         public String username;
         public long password;
         public boolean admin;
-
+    
         public User(final String _username, final long _password, final boolean _admin) {
             username = _username;
             password = _password;
             admin = _admin;
         }
     }
-
-    public class UserManagerException extends Exception {
+    
+    public static class UserManagerException extends Exception {
         public UserManagerException(final String _message) { super(_message); }
     }
 }

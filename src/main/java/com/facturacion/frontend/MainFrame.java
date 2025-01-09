@@ -18,6 +18,7 @@ public class MainFrame extends JFrame {
     public MainFrame(String FrameName) throws IOException, UserManagerException {
         final UserManager userManager = new UserManager();
         final SQLConection sql = new SQLConection();
+        sql.hashCode();
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cardPanel = new JPanel(cardLayout);
