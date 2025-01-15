@@ -22,7 +22,7 @@ public class UserManager {
     private User currentUser;
 
     public UserManager() throws IOException, UserManagerException {
-        File dataDir = new File(userFilePath.getParent().toString());
+        File dataDir = userFilePath.getParent().toFile();
         if (!dataDir.exists()) {
             dataDir.mkdirs();
         }

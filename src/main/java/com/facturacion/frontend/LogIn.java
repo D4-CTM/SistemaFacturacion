@@ -26,7 +26,7 @@ public class LogIn extends JPanel{
         userManager = _userManager;
         indexCard = _indexCard;
 
-        setBackground(Color.LIGHT_GRAY);
+        setBackground(FrontendElements.OUTER_BG);
         setPreferredSize(frameSize);
         setLayout(null);
         
@@ -35,7 +35,7 @@ public class LogIn extends JPanel{
         final Point innerPanelPoint = new Point(frameSize.width/2 - innerPanelSize/2, frameSize.height/2 - innerPanelSize/2);
         innerPanel.setLocation(innerPanelPoint);
         innerPanel.setSize(innerPanelSize, innerPanelSize);
-        innerPanel.setBackground(Color.DARK_GRAY);
+        innerPanel.setBackground(FrontendElements.DEFAULT_BG);
 
         final int thirdOfInnerPanel = (int) (innerPanelSize/3);
         JLabel companyLogo = new JLabel();
@@ -48,7 +48,7 @@ public class LogIn extends JPanel{
         usernameTXT.setLocation(40, thirdOfInnerPanel + thirdOfInnerPanel/4);
         usernameTXT.setSize(innerPanelSize - 80, thirdOfInnerPanel - (int) (thirdOfInnerPanel * 0.75));
         usernameTXT.setFont(FrontendElements.SystemFont);
-        usernameTXT.setForeground(Color.WHITE);
+        usernameTXT.setForeground(FrontendElements.DEFAULT_FG);
         innerPanel.add(usernameTXT);
 
         final JTextField usernameFLD = new JTextField();
@@ -61,7 +61,7 @@ public class LogIn extends JPanel{
         passwordTXT.setLocation(40, (2*thirdOfInnerPanel) - thirdOfInnerPanel/6);
         passwordTXT.setSize(usernameFLD.getSize());
         passwordTXT.setFont(FrontendElements.SystemFont);
-        passwordTXT.setForeground(Color.WHITE);
+        passwordTXT.setForeground(FrontendElements.DEFAULT_FG);
         innerPanel.add(passwordTXT);
 
         final JPasswordField passwordFLD = new JPasswordField();
@@ -86,7 +86,7 @@ public class LogIn extends JPanel{
 
             try {
                 if (userManager.logIn(username, password)) {
-
+                    indexCard.show("InventoryMenu");
                 }
             } catch (UserManagerException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Inicio de sesion", JOptionPane.ERROR_MESSAGE);

@@ -161,6 +161,12 @@ public class RestaurantItems {
             name = _name;
         }
 
+        public void modifyData(String _name, String _unit, float _quantity) {
+            quantity = _quantity;
+            unit = _unit;
+            name = _name;
+        }
+
         public void updateIngredient(Connection connection) {
             if (id == -1) return ;
             String sqlStatement = "UPDATE ingredientes SET nombre = ?, unidad = ?, cantidad = ? WHERE id = ?";
@@ -217,7 +223,7 @@ public class RestaurantItems {
 
         @Override
         public String toString() {
-            return "id: " + id + "name: " + name + " quantity: " + quantity + " " + unit;
+            return "id: " + id + " name: " + name + " quantity: " + quantity + " " + unit;
         }
 
     }

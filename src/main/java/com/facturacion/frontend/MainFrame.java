@@ -38,7 +38,9 @@ public class MainFrame extends JFrame {
         IndexCard indexCard = new IndexCard();
 
         indexCard.add(new LogIn(indexCard, userManager, frameSize), "LogIn");
+        indexCard.add(new InventoryMenu(indexCard, sql, frameSize), "InventoryMenu");
 
+        indexCard.show("LogIn");
         add(indexCard);
     }
 
