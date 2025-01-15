@@ -16,7 +16,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.representer.Representer;
 
 public class UserManager {
-    private final Path userFilePath = Path.of("./.Reportes/Usuarios.yaml");
+    private final Path userFilePath = Path.of("./Reportes/.Usuarios.yaml");
     private final String superUser = "Sudo";
     private final Yaml yaml;
     private User currentUser;
@@ -25,7 +25,6 @@ public class UserManager {
         File dataDir = new File(userFilePath.getParent().toString());
         if (!dataDir.exists()) {
             dataDir.mkdirs();
-            hideFolder();
         }
 
         File userFile = userFilePath.toFile();
@@ -43,15 +42,16 @@ public class UserManager {
         if (!userFile.exists()) {
             userFile.createNewFile();
             initializeYaml();
+            hide(userFile);
         }
         currentUser = null;
     }
 
-    private void hideFolder() throws IOException {
+    private void hide(File file) throws IOException {
         String os = System.getProperty("os.name").toLowerCase();
 
         if (os.contains("win")) {
-            Files.setAttribute(userFilePath.getParent(), "dos:hidden", Boolean.TRUE, LinkOption.values());
+            Files.setAttribute(file.toPath(), "dos:hidden", Boolean.TRUE, LinkOption.values());
         }
     }
 
