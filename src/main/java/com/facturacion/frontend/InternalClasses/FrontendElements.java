@@ -9,8 +9,13 @@ public class FrontendElements {
 
     public static Color DEFAULT_BG = Color.DARK_GRAY;
     public static Color DEFAULT_FG = Color.WHITE;
-    public static Color OUTER_BG = Color.LIGHT_GRAY;
 
+    public static Color OUTER_BG = Color.LIGHT_GRAY;
+    public static Color OUTER_FG = Color.BLACK;
+
+    public static Color BUTTON_BG = Color.LIGHT_GRAY;
     public static Color BUTTON_FG = Color.BLACK;
-    public static Color BUTTON_BG = OUTER_BG;
+
+    public static Color FOCUSED_SEARCH_BAR = Color.BLACK;
+    public static Color UNFOCUSED_SEARCH_BAR = Color.DARK_GRAY;
 }

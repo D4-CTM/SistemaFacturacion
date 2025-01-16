@@ -18,11 +18,11 @@ import com.facturacion.backend.UserManager.UserManagerException;
 import com.facturacion.frontend.InternalClasses.FrontendElements;
 import com.facturacion.frontend.InternalClasses.IndexCard;
 
-public class LogIn extends JPanel{
+public class LogInScene extends JPanel{
     private final IndexCard indexCard;
     private final UserManager userManager;
 
-    public LogIn(IndexCard _indexCard, UserManager _userManager, Dimension frameSize) {
+    public LogInScene(IndexCard _indexCard, UserManager _userManager, Dimension frameSize) {
         userManager = _userManager;
         indexCard = _indexCard;
 

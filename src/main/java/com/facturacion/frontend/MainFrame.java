@@ -31,16 +31,15 @@ public class MainFrame extends JFrame {
         final UserManager userManager = new UserManager();
         final Dimension frameSize = getUsableSpaceDimension();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
         setSize(frameSize);
         setResizable(false);
 
         IndexCard indexCard = new IndexCard();
 
-        indexCard.add(new LogIn(indexCard, userManager, frameSize), "LogIn");
-        indexCard.add(new InventoryMenu(indexCard, sql, frameSize), "InventoryMenu");
+        indexCard.add(new LogInScene(indexCard, userManager, frameSize), "LogIn");
+        indexCard.add(new MenuScene(indexCard, sql, frameSize), "InventoryMenu");
+        indexCard.show("InventoryMenu");
 
-        indexCard.show("LogIn");
         add(indexCard);
     }
 

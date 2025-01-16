@@ -9,11 +9,12 @@ import com.facturacion.backend.SQLConnection;
 import com.facturacion.frontend.InternalClasses.FrontendElements;
 import com.facturacion.frontend.InternalClasses.IndexCard;
 import com.facturacion.frontend.InternalClasses.MenuButtons;
+import com.facturacion.frontend.MenuOptions.InventoryScene;
 
-public class InventoryMenu extends JPanel{
+public class MenuScene extends JPanel{
     private final float sidePanelPercentage = 0.2f;
 
-    public InventoryMenu(IndexCard _indexCard, SQLConnection _sql, Dimension frameSize) {
+    public MenuScene(IndexCard indexCard, SQLConnection sql, Dimension frameSize) {
         setPreferredSize(frameSize);
         setLayout(null);
         
@@ -23,9 +24,13 @@ public class InventoryMenu extends JPanel{
         sidePanel.setBackground(FrontendElements.DEFAULT_BG);
         add(sidePanel);
 
+        Dimension indexPanelDimension = new Dimension((int) (frameSize.width * (1 - sidePanelPercentage)), frameSize.height);
         final IndexCard indexPanel = new IndexCard();
-        indexPanel.setSize((int) (frameSize.width * (1 - sidePanelPercentage)), frameSize.height);
         indexPanel.setLocation(sidePanelWidth, 0);
+        indexPanel.setSize(indexPanelDimension);
+
+        indexPanel.add(new InventoryScene(indexPanel, sql, indexPanelDimension), "Inventario");
+
         add(indexPanel);
 
         final int sidePanelOptionsHeight = (int) (frameSize.height/12);
@@ -48,7 +53,7 @@ public class InventoryMenu extends JPanel{
         spacer.setOpaque(false);
         sidePanel.add(spacer);
 
-        final MenuButtons returnOption = new MenuButtons(_indexCard, optionsDimension, "Regresar");
+        final MenuButtons returnOption = new MenuButtons(indexCard, optionsDimension, "Regresar");
         sidePanel.add(returnOption);
     }
 
