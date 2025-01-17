@@ -29,7 +29,7 @@ public class MenuScene extends JPanel{
         indexPanel.setLocation(sidePanelWidth, 0);
         indexPanel.setSize(indexPanelDimension);
 
-        indexPanel.add(new InventoryScene(indexPanel, sql, indexPanelDimension), "Inventario");
+        indexPanel.add(new InventoryScene(sql, indexPanelDimension), "Inventario");
 
         add(indexPanel);
 

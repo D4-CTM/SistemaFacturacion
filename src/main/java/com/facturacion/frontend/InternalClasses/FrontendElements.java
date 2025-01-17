@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 
 public class FrontendElements {
+    public static Font DialogFont = new Font("Roboto", Font.PLAIN, 20);
     public static Font SystemFont = new Font("Roboto", Font.PLAIN, 30);
     public static Font OptionsFont = new Font("Roboto", Font.BOLD, 40);
 

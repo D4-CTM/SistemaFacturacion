@@ -85,19 +85,22 @@ public class RestaurantItems {
             name = _name;
         }
 
-        public void updatePlate(Connection connection) {
-            if (id == -1)  return ;
+        public boolean updatePlate(Connection connection) {
+            if (id == -1)  return false;
             String sqlStatement = "UPDATE platos SET nombre = ?, frecuencia = ?, precio = ? WHERE id = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
-                preparedStatement.setString(1, name.toUpperCase());
+                preparedStatement.setString(1, name);
                 preparedStatement.setInt(2, frequency);
                 preparedStatement.setFloat(3, price);
                 preparedStatement.setInt(4, id);
 
                 preparedStatement.executeUpdate();
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
+            return false;
         }
 
         public void deletePlate(Connection connection) {
@@ -113,10 +116,10 @@ public class RestaurantItems {
             }
         }
 
-        public void insertPlate(Connection connection) {
+        public boolean insertPlate(Connection connection) {
             String sqlStatement = "INSERT INTO platos(nombre, frecuencia, precio) VALUES(?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
-                preparedStatement.setString(1, name.toUpperCase());
+                preparedStatement.setString(1, name);
                 preparedStatement.setInt(2, frequency);
                 preparedStatement.setFloat(3, price);
 
@@ -130,9 +133,12 @@ public class RestaurantItems {
                     }
 
                 }
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
+            return false;
         }
 
         @Override
@@ -167,19 +173,21 @@ public class RestaurantItems {
             name = _name;
         }
 
-        public void updateIngredient(Connection connection) {
-            if (id == -1) return ;
+        public boolean updateIngredient(Connection connection) {
+            if (id == -1) return false;
             String sqlStatement = "UPDATE ingredientes SET nombre = ?, unidad = ?, cantidad = ? WHERE id = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
-                preparedStatement.setString(1, name.toUpperCase());
-                preparedStatement.setString(2, unit.toLowerCase());
+                preparedStatement.setString(1, name);
+                preparedStatement.setString(2, unit);
                 preparedStatement.setFloat(3, quantity);
                 preparedStatement.setInt(4, id);
 
-                preparedStatement.executeUpdate();
+                return preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
+            return false;
         }
 
         public void deleteIngredient(Connection connection) {
@@ -195,11 +203,11 @@ public class RestaurantItems {
             }
         }
 
-        public void insertIngredient(Connection connection) {
+        public boolean insertIngredient(Connection connection) {
             String sqlStatement = "INSERT INTO ingredientes(nombre, unidad, cantidad) VALUES(?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
-                preparedStatement.setString(1, name.toUpperCase());
-                preparedStatement.setString(2, unit.toLowerCase());
+                preparedStatement.setString(1, name);
+                preparedStatement.setString(2, unit);
                 preparedStatement.setFloat(3, quantity);
                 
                 int affectedRows = preparedStatement.executeUpdate();
@@ -212,9 +220,12 @@ public class RestaurantItems {
                     }
 
                 }
+
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            return false;
         }
 
         public boolean isValid() {

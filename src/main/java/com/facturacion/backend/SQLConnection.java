@@ -115,13 +115,17 @@ public class SQLConnection {
         return null;
     }
 
-    public void insertElement(Object element) {
+    public boolean insertElement(Object element) {
         try (Connection connection = createConnection()) {
 
             if (element instanceof Plate plate) {
-                plate.insertPlate(connection);
+                
+                return plate.insertPlate(connection);
+
             } else if (element instanceof Ingredient ingredient) {
-                ingredient.insertIngredient(connection);
+
+                return ingredient.insertIngredient(connection);
+
             } else if (element instanceof RecipeIngredient recipeIngredient) {
                 recipeIngredient.insertRecipeIngredient(connection);
             }
@@ -129,6 +133,8 @@ public class SQLConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return false;
     }
     
     public void deleteElement(Object element) {
@@ -147,18 +153,20 @@ public class SQLConnection {
         }
     }
 
-    public void modifyElement(Object element) {
+    public boolean modifyElement(Object element) {
         try (Connection connection = createConnection()) {
 
             if (element instanceof Plate plate) {
-                plate.updatePlate(connection);
+                return plate.updatePlate(connection);
             } else if (element instanceof Ingredient ingredient) {
-                ingredient.updateIngredient(connection);
+                return ingredient.updateIngredient(connection);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return false;
     }
 
 
