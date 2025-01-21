@@ -1,28 +1,24 @@
 package com.facturacion.backend;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import com.facturacion.backend.RestaurantItems.*;
+import com.zaxxer.hikari.HikariDataSource;
 
 public class SQLConnection {
-    private final String username;
-    private final String password;
+    private final HikariDataSource hikari;
     
     public SQLConnection(final String _username, final String _password) {
-        username = _username;
-        password = _password;
-
-        Object element = fetch("Tajadas", Items.Ingredient);
-        if (element instanceof Ingredient ingredient) {
-            System.out.println(ingredient.toString());
-        }
+        hikari = new HikariDataSource();
+        hikari.setJdbcUrl("jdbc:postgresql://localhost/restaurante");
+        hikari.setUsername(_username);
+        hikari.setPassword(_password);
     }
 
-    private Connection createConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:postgresql://localhost/restaurante", username, password);
+    private Connection getConnection() throws SQLException {
+        return hikari.getConnection();
     }
 
     private Object identifyItem(Items item, ResultSet resultSet) throws SQLException{
@@ -67,9 +63,9 @@ public class SQLConnection {
         };
 
 
-        try (Connection connection = createConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlString)) {
-                preparedStatement.setInt(1, elementId);
+        try (Connection connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlString, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            preparedStatement.setInt(1, elementId);
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
@@ -99,8 +95,8 @@ public class SQLConnection {
             }
         };
 
-        try (Connection connection = createConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlString)) {
+        try (Connection connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlString, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
                 preparedStatement.setString(1, elementName);
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -116,7 +112,8 @@ public class SQLConnection {
     }
 
     public boolean insertElement(Object element) {
-        try (Connection connection = createConnection()) {
+        try (Connection connection = getConnection()) {
+            connection.setAutoCommit(false);
 
             if (element instanceof Plate plate) {
                 
@@ -130,6 +127,7 @@ public class SQLConnection {
                 recipeIngredient.insertRecipeIngredient(connection);
             }
 
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -138,8 +136,8 @@ public class SQLConnection {
     }
     
     public void deleteElement(Object element) {
-        try (Connection connection = createConnection()) {
-
+        try (Connection connection = getConnection()) {
+            connection.setAutoCommit(false);
             if (element instanceof Plate plate) {
                 plate.deletePlate(connection);
             } else if (element instanceof Ingredient ingredient) {
@@ -147,21 +145,21 @@ public class SQLConnection {
             } else if (element instanceof RecipeIngredient recipeIngredient) {
                 recipeIngredient.deleteRecipeIngredient(connection);
             }
-
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public boolean modifyElement(Object element) {
-        try (Connection connection = createConnection()) {
-
+        try (Connection connection = getConnection()) {
+            connection.setAutoCommit(false);
             if (element instanceof Plate plate) {
                 return plate.updatePlate(connection);
             } else if (element instanceof Ingredient ingredient) {
                 return ingredient.updateIngredient(connection);
             }
-
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }

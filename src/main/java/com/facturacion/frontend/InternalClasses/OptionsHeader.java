@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 
 import com.facturacion.backend.RestaurantItems.Ingredient;
 import com.facturacion.backend.RestaurantItems.Items;
-import com.facturacion.frontend.MenuOptions.IngredientPane;
+import com.facturacion.frontend.InternalClasses.EngredientElements.IngredientPane;
 import com.facturacion.backend.SQLConnection;
 
 public class OptionsHeader extends JPanel {
@@ -58,7 +58,7 @@ public class OptionsHeader extends JPanel {
         searchLine.setBackground(FrontendElements.UNFOCUSED_SEARCH_BAR);
         add(searchLine);
 
-        final JButton ingredientBTN = new JButton("Agregar" + (item == Items.Ingredient ? "ingrediente" : "platillo"));
+        final JButton ingredientBTN = new JButton("Agregar " + (item == Items.Ingredient ? "ingrediente" : "platillo"));
         ingredientBTN.setSize((int) (headerSize.width * 0.25), headerHeight);
         ingredientBTN.setLocation(headerSize.width - ingredientBTN.getWidth(), 0);       
         ingredientBTN.setFont(FrontendElements.SystemFont);

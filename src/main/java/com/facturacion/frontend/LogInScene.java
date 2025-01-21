@@ -89,6 +89,7 @@ public class LogInScene extends JPanel{
                     indexCard.show("InventoryMenu");
                     passwordFLD.setText("");
                     usernameFLD.setText("");
+                    userManager.logOut();
                 }
             } catch (UserManagerException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Inicio de sesion", JOptionPane.ERROR_MESSAGE);

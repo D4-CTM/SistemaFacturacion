@@ -1,4 +1,4 @@
-package com.facturacion.frontend.MenuOptions;
+package com.facturacion.frontend.InternalClasses.EngredientElements;
 
 import java.awt.Dimension;
 
