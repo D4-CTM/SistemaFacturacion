@@ -17,6 +17,7 @@ public class IngredientElementPanel extends JPanel {
     // id - 0.1 | name - 0.5 | price - 0.3 | removeObjBTN - height
     public IngredientElementPanel(Object Id, Object name, Object quantity, boolean removable, Dimension panelSize) {
         setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
+        setSize(panelSize);
 
         try {
             id = Integer.parseInt(Id.toString());
@@ -28,7 +29,6 @@ public class IngredientElementPanel extends JPanel {
             setBackground(FrontendElements.OUTER_BG);
         } else setBackground(FrontendElements.INGREDIENT_PANEL_HEADER_BG);
 
-        setPreferredSize(panelSize);
         final int usableWidth = panelSize.width - panelSize.height;
         
         final int idWidth = (int) (usableWidth * 0.1);
@@ -56,6 +56,11 @@ public class IngredientElementPanel extends JPanel {
             removeBTN.setBackground(FrontendElements.DELETE_BUTTON_BG);
             removeBTN.setBorder(FrontendElements.DELETE_BUTTON_BORDER);
             add(removeBTN);
+        } else {
+            final JPanel extraPNL = new JPanel();
+            extraPNL.setPreferredSize(new Dimension(panelSize.height, panelSize.height));
+            extraPNL.setBackground(FrontendElements.OUTER_BG);
+            add(extraPNL);
         }
 
 

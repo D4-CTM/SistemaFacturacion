@@ -4,12 +4,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+
 import com.facturacion.backend.RestaurantItems.*;
 import com.zaxxer.hikari.HikariDataSource;
 
 public class SQLConnection {
     private final HikariDataSource hikari;
-    
+    private final int OPP = 10; //OBJECTS PER PAGE
+    private int offset = 0;
+
     public SQLConnection(final String _username, final String _password) {
         hikari = new HikariDataSource();
         hikari.setJdbcUrl("jdbc:postgresql://localhost/restaurante");
@@ -19,6 +23,50 @@ public class SQLConnection {
 
     private Connection getConnection() throws SQLException {
         return hikari.getConnection();
+    }
+
+    public LinkedList<Ingredient> getPreviusIngredients() {
+        offset -= OPP;
+        offset = offset > 0 ? offset : 0;
+        String sql = "SELECT * FROM ingredientes WHERE id > 0 OFFSET ? LIMIT ?";
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+                preparedStatement.setInt(1, offset);
+                preparedStatement.setInt(2, OPP);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (!resultSet.next()) return null;
+                    LinkedList<Ingredient> list = new LinkedList<>();
+                    do {
+                        list.add((Ingredient) identifyItem(Items.Ingredient, resultSet));
+                    } while (resultSet.next());
+                    return list;
+                }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public LinkedList<Ingredient> getNextIngredients() {
+        String sql = "SELECT * FROM ingredientes WHERE id > 0 OFFSET ? LIMIT ?";
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+                preparedStatement.setInt(1, offset);
+                preparedStatement.setInt(2, OPP);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (!resultSet.next()) return null;
+                    LinkedList<Ingredient> list = new LinkedList<>();
+                    do {
+                        list.add((Ingredient) identifyItem(Items.Ingredient, resultSet));
+                        offset++;
+                    } while (resultSet.next());
+                    return list;
+                }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private Object identifyItem(Items item, ResultSet resultSet) throws SQLException{
@@ -127,7 +175,6 @@ public class SQLConnection {
                 recipeIngredient.insertRecipeIngredient(connection);
             }
 
-            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -145,7 +192,7 @@ public class SQLConnection {
             } else if (element instanceof RecipeIngredient recipeIngredient) {
                 recipeIngredient.deleteRecipeIngredient(connection);
             }
-            connection.commit();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -159,7 +206,7 @@ public class SQLConnection {
             } else if (element instanceof Ingredient ingredient) {
                 return ingredient.updateIngredient(connection);
             }
-            connection.commit();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

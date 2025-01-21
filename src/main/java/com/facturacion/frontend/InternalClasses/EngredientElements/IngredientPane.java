@@ -53,7 +53,7 @@ public class IngredientPane {
         ingredientQuantityLBL.setSize(ingredientLBL.getSize());
         ingredientPNL.add(ingredientQuantityLBL);
 
-        ingredientQuantitySPNR = new JSpinner(new SpinnerNumberModel(0.1, 0.01, 999999999.99, 0.5));        
+        ingredientQuantitySPNR = new JSpinner(new SpinnerNumberModel(0, 0, 999999999.99, 0.5));        
         ingredientQuantitySPNR.setFont(FrontendElements.DialogFont);
         ingredientQuantitySPNR.setLocation(ingredientQuantityLBL.getX() + ingredientQuantityLBL.getWidth() + 10, ingredientQuantityLBL.getY());
         ingredientQuantitySPNR.setSize(ingredientLBL.getSize());
@@ -107,6 +107,7 @@ public class IngredientPane {
         if (id < 0) {
             Ingredient ingredient = new Ingredient(ingredientNameFLD.getText(), ingredientUnitBox.getSelectedItem().toString(), Float.parseFloat(ingredientQuantitySPNR.getValue().toString()));
             if (sql.insertElement(ingredient)) {
+
                 ingredientDialog.dispose();
             } else JOptionPane.showMessageDialog(null, "No se ha podido ingresar el elemento en la base de datos, los motivos pueden ser:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un elemento con dicho nombre, por favor intente con un nombre distinto.", "Error al ingresar ingrediente", JOptionPane.WARNING_MESSAGE);
         } else {

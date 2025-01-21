@@ -31,6 +31,7 @@ public class RestaurantItems {
                 preparedStatement.setDouble(3, ingredient_needed);
 
                 preparedStatement.executeUpdate();
+                connection.commit();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -43,6 +44,7 @@ public class RestaurantItems {
                 preparedStatement.setInt(2, ingredient_id);
 
                 preparedStatement.executeUpdate();
+                connection.commit();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -95,6 +97,7 @@ public class RestaurantItems {
                 preparedStatement.setInt(4, id);
 
                 preparedStatement.executeUpdate();
+                connection.commit();
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -111,6 +114,7 @@ public class RestaurantItems {
                 preparedStatement.setInt(2, id);
 
                 preparedStatement.executeUpdate();
+                connection.commit();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -133,6 +137,7 @@ public class RestaurantItems {
                     }
 
                 }
+                connection.commit();
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -182,7 +187,10 @@ public class RestaurantItems {
                 preparedStatement.setFloat(3, quantity);
                 preparedStatement.setInt(4, id);
 
-                return preparedStatement.executeUpdate() > 0;
+                if (preparedStatement.executeUpdate() > 0) {
+                    connection.commit();
+                    return true;
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -198,6 +206,7 @@ public class RestaurantItems {
                 preparedStatement.setInt(2, id);
 
                 preparedStatement.executeUpdate();
+                connection.commit();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -221,6 +230,7 @@ public class RestaurantItems {
 
                 }
 
+                connection.commit();
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
