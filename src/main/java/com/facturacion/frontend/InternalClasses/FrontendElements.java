@@ -29,8 +29,10 @@ public class FrontendElements {
     public static final Color FOCUSED_SEARCH_BAR = OUTER_FG;
     public static final Color UNFOCUSED_SEARCH_BAR = DEFAULT_BG;
 //Ingredient color scheme - to combine with the general color scheme
-    public static final Color INGREDIENT_PANEL_BG = Color.LIGHT_GRAY;
     public static final Color INGREDIENT_PANEL_HEADER_BG = Color.WHITE;
-    public static final Color SELECTED_INGREDIENT_PANEL_FG = Color.BLACK;
-    public static final Color UNSELECTED_INGREDIENT_PANEL_FG = Color.DARK_GRAY;
+    public static final Color INGREDIENT_PANEL_HEADER_FG = Color.BLACK;
+    public static final Color UNSELECTED_INGREDIENT_PANEL_BG = Color.LIGHT_GRAY;
+    public static final Color UNSELECTED_INGREDIENT_PANEL_FG = Color.BLACK;
+    public static final Color SELECTED_INGREDIENT_PANEL_BG = Color.DARK_GRAY;
+    public static final Color SELECTED_INGREDIENT_PANEL_FG = Color.WHITE;
 }

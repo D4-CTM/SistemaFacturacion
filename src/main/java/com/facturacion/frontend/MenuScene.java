@@ -9,7 +9,7 @@ import com.facturacion.backend.SQLConnection;
 import com.facturacion.frontend.InternalClasses.FrontendElements;
 import com.facturacion.frontend.InternalClasses.IndexCard;
 import com.facturacion.frontend.InternalClasses.MenuButtons;
-import com.facturacion.frontend.MenuOptions.InventoryScene;
+import com.facturacion.frontend.MenuOptions.EngredientElements.InventoryScene;
 
 public class MenuScene extends JPanel{
     private final float sidePanelPercentage = 0.2f;

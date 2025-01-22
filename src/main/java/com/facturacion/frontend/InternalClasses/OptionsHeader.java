@@ -12,8 +12,8 @@ import javax.swing.JTextField;
 
 import com.facturacion.backend.RestaurantItems.Ingredient;
 import com.facturacion.backend.RestaurantItems.Items;
-import com.facturacion.frontend.InternalClasses.EngredientElements.IngredientPane;
-import com.facturacion.frontend.MenuOptions.InventoryScene;
+import com.facturacion.frontend.MenuOptions.EngredientElements.IngredientPane;
+import com.facturacion.frontend.MenuOptions.EngredientElements.InventoryScene;
 import com.facturacion.backend.SQLConnection;
 
 public class OptionsHeader extends JPanel {

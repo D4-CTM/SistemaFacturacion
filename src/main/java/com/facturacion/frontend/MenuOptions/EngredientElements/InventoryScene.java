@@ -1,4 +1,4 @@
-package com.facturacion.frontend.MenuOptions;
+package com.facturacion.frontend.MenuOptions.EngredientElements;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -17,15 +17,14 @@ import com.facturacion.backend.RestaurantItems.Ingredient;
 import com.facturacion.backend.RestaurantItems.Items;
 import com.facturacion.frontend.InternalClasses.FrontendElements;
 import com.facturacion.frontend.InternalClasses.OptionsHeader;
-import com.facturacion.frontend.InternalClasses.EngredientElements.IngredientElementPanel;
-import com.facturacion.frontend.InternalClasses.EngredientElements.IngredientPane;
 
 public class InventoryScene extends JPanel {
-    public final SQLConnection sql;
-
+    private final IngredientPane ingredientPane;
+    private final SQLConnection sql;
+    
     public InventoryScene(SQLConnection _sql, Dimension containerSize) {
+        ingredientPane = new IngredientPane(_sql);
         sql = _sql;
-        final IngredientPane ingredientPane = new IngredientPane(sql);
 
         final int scrollPaneHeight = (int) (containerSize.height * (1 - (0.075 + 0.075 + 0.1)));  
         final int scrollBarWidth = 15;
@@ -101,15 +100,14 @@ public class InventoryScene extends JPanel {
 
     public void updateComboBox() {
         int selectedPage = comboBox.getSelectedIndex();
-        final var newModel = createComboBoxModel();
-        
-        if (comboBox.getModel().getSize() > newModel.getSize()) {
-            while (comboBox.getModel().getSize() > newModel.getSize()) selectedPage--;
-        }
         
         comboBox.setModel(createComboBoxModel());
         comboBox.setSelectedIndex(selectedPage);
         
+    }
+
+    public void modifyIngredient(Ingredient ingredient) {
+        ingredientPane.modifyIngredient(ingredient);
     }
 
     private DefaultComboBoxModel<String> createComboBoxModel() {
@@ -126,8 +124,11 @@ public class InventoryScene extends JPanel {
         }
         ingredientPanel.removeAll();
 
+        IngredientElementPanel ingredientElementPanel;
         for (final Ingredient ingredient : list) {
-            ingredientPanel.add(new IngredientElementPanel(ingredient, true, ingredientDimension, sql, this));
+            ingredientElementPanel = new IngredientElementPanel(ingredient, true, ingredientDimension, sql, this);
+            ingredientElementPanel.setMaximumSize(ingredientDimension);
+            ingredientPanel.add(ingredientElementPanel);
         }
         ingredientPanel.repaint();
         ingredientPanel.revalidate();
