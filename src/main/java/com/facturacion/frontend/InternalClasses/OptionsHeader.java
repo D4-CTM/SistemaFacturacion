@@ -13,14 +13,14 @@ import javax.swing.JTextField;
 import com.facturacion.backend.RestaurantItems.Ingredient;
 import com.facturacion.backend.RestaurantItems.Items;
 import com.facturacion.frontend.InternalClasses.EngredientElements.IngredientPane;
+import com.facturacion.frontend.MenuOptions.InventoryScene;
 import com.facturacion.backend.SQLConnection;
 
 public class OptionsHeader extends JPanel {
     private final String SEARCH_BAR_DEFAULT_TEXT; 
-    private final IngredientPane ingredientPane;
 
-    public OptionsHeader(SQLConnection sql, Dimension headerSize, Items item) {
-        ingredientPane = new IngredientPane(sql);
+    public OptionsHeader(SQLConnection sql, Dimension headerSize, Items item, Object itemPane, Object inventoryScene) {
+        
 
         SEARCH_BAR_DEFAULT_TEXT = switch (item) {
             case Ingredient -> {
@@ -79,8 +79,9 @@ public class OptionsHeader extends JPanel {
                         return ;
                     }
 
-                    ingredientPane.modifyIngredient(ingredient);
-                }                
+                    ((IngredientPane) itemPane).modifyIngredient(ingredient);
+                    ((InventoryScene) inventoryScene).updateComboBox();
+                }
                 
             } else {
 
@@ -92,9 +93,9 @@ public class OptionsHeader extends JPanel {
                         return ;
                     }
     
-                    ingredientPane.modifyIngredient(ingredient);
+                    ((IngredientPane) itemPane).modifyIngredient(ingredient);
+                    ((InventoryScene) inventoryScene).updateComboBox();
                 }
-
 
             }
 
@@ -122,7 +123,10 @@ public class OptionsHeader extends JPanel {
         });
 
         ingredientBTN.addActionListener(event -> {
-            ingredientPane.createIngredient();
+            if (item == Items.Ingredient) {
+                ((IngredientPane) itemPane).createIngredient();
+                ((InventoryScene) inventoryScene).updateComboBox();
+            }
         });
 
     }

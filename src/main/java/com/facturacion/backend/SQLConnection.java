@@ -1,5 +1,6 @@
 package com.facturacion.backend;
 
+import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,41 +26,46 @@ public class SQLConnection {
         return hikari.getConnection();
     }
 
-    public LinkedList<Ingredient> getPreviusIngredients() {
-        offset -= OPP;
-        offset = offset > 0 ? offset : 0;
-        String sql = "SELECT * FROM ingredientes WHERE id > 0 OFFSET ? LIMIT ?";
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
-                preparedStatement.setInt(1, offset);
-                preparedStatement.setInt(2, OPP);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (!resultSet.next()) return null;
-                    LinkedList<Ingredient> list = new LinkedList<>();
-                    do {
-                        list.add((Ingredient) identifyItem(Items.Ingredient, resultSet));
-                    } while (resultSet.next());
-                    return list;
-                }
+    public int getPageCount(Items item) {
+        return getItemCount(item)/OPP;
+    }
+
+    public int getItemCount(Items item) {
+        String sql = switch (item) {
+            case Ingredient -> "SELECT COUNT(id) FROM ingredientes;";
+            case Plate -> "SELECT COUNT(id) FROM platos";
+            default -> "";
+        };
+        if (sql.isBlank()) return -1;
+
+        try (Connection connection = getConnection(); 
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+                resultSet.next();
+                return resultSet.getInt("count");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+
+        return -1;
     }
 
+    public LinkedList<Ingredient> getIngredientsAt(int page) {
+        offset = page * OPP;
+        return getCurrentIngredients();
+    }
 
-    public LinkedList<Ingredient> getNextIngredients() {
+    public LinkedList<Ingredient> getCurrentIngredients() {
         String sql = "SELECT * FROM ingredientes WHERE id > 0 OFFSET ? LIMIT ?";
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
                 preparedStatement.setInt(1, offset);
                 preparedStatement.setInt(2, OPP);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (!resultSet.next()) return null;
                     LinkedList<Ingredient> list = new LinkedList<>();
+                    if (!resultSet.next()) return list;
                     do {
                         list.add((Ingredient) identifyItem(Items.Ingredient, resultSet));
-                        offset++;
                     } while (resultSet.next());
                     return list;
                 }
@@ -182,20 +188,21 @@ public class SQLConnection {
         return false;
     }
     
-    public void deleteElement(Object element) {
+    public boolean deleteElement(Object element) {
         try (Connection connection = getConnection()) {
             connection.setAutoCommit(false);
             if (element instanceof Plate plate) {
-                plate.deletePlate(connection);
+                return plate.deletePlate(connection);
             } else if (element instanceof Ingredient ingredient) {
-                ingredient.deleteIngredient(connection);
+                return ingredient.deleteIngredient(connection);
             } else if (element instanceof RecipeIngredient recipeIngredient) {
-                recipeIngredient.deleteRecipeIngredient(connection);
+                return recipeIngredient.deleteRecipeIngredient(connection);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public boolean modifyElement(Object element) {

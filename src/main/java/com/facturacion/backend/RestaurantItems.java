@@ -37,7 +37,7 @@ public class RestaurantItems {
             }
         }
 
-        public void deleteRecipeIngredient(Connection connection) {
+        public boolean deleteRecipeIngredient(Connection connection) {
             String sqlStatement = "DELETE FROM recetas WHERE id_plato = ? AND id_ingrediente = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
                 preparedStatement.setInt(1, plate_id);
@@ -45,9 +45,11 @@ public class RestaurantItems {
 
                 preparedStatement.executeUpdate();
                 connection.commit();
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            return false;
         }
 
         @Override
@@ -106,18 +108,19 @@ public class RestaurantItems {
             return false;
         }
 
-        public void deletePlate(Connection connection) {
-            if (id == -1) return ;
-            String sqlStatement = "DELETE FROM platos WHERE id = ?; DELETE FROM recetas WHERE id_plato = ?";
+        public boolean deletePlate(Connection connection) {
+            if (id == -1) return false;
+            String sqlStatement = "DELETE FROM platos WHERE id = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
                 preparedStatement.setInt(1, id);
-                preparedStatement.setInt(2, id);
 
                 preparedStatement.executeUpdate();
                 connection.commit();
+                return false;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            return false;
         }
 
         public boolean insertPlate(Connection connection) {
@@ -198,18 +201,19 @@ public class RestaurantItems {
             return false;
         }
 
-        public void deleteIngredient(Connection connection) {
-            if (id == -1) return ;
-            String sqlStatement = "DELETE FROM ingredientes WHERE id = ?; DELETE FROM recetas WHERE id_ingredientes = ?";
+        public boolean deleteIngredient(Connection connection) {
+            if (id == -1) return false;
+            String sqlStatement = "DELETE FROM ingredientes WHERE id = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
                 preparedStatement.setInt(1, id);
-                preparedStatement.setInt(2, id);
 
                 preparedStatement.executeUpdate();
                 connection.commit();
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            return false;
         }
 
         public boolean insertIngredient(Connection connection) {

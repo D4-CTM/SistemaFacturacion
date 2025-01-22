@@ -6,24 +6,26 @@ import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.facturacion.backend.SQLConnection;
+import com.facturacion.backend.RestaurantItems.Ingredient;
 import com.facturacion.frontend.InternalClasses.FrontendElements;
+import com.facturacion.frontend.MenuOptions.InventoryScene;
 
 public class IngredientElementPanel extends JPanel {
     public int id;
 
     // sizes
     // id - 0.1 | name - 0.5 | price - 0.3 | removeObjBTN - height
-    public IngredientElementPanel(Object Id, Object name, Object quantity, boolean removable, Dimension panelSize) {
+    public IngredientElementPanel(Ingredient ingredient, boolean removable, Dimension panelSize, SQLConnection sql, InventoryScene inventoryScene) {
         setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
         setSize(panelSize);
 
-        try {
-            id = Integer.parseInt(Id.toString());
-        } catch (Exception e) {
-            id = -1;
-        }
+        Object Id = (ingredient == null)? "Id" : ingredient.id;
+        Object name = (ingredient == null)? "Nombre" : ingredient.name;
+        Object quantity = (ingredient == null)? "Cantidad" : ingredient.quantity + " " + ingredient.unit;
 
         if (removable) {
             setBackground(FrontendElements.OUTER_BG);
@@ -55,6 +57,14 @@ public class IngredientElementPanel extends JPanel {
             removeBTN.setForeground(FrontendElements.DELETE_BUTTON_FG);
             removeBTN.setBackground(FrontendElements.DELETE_BUTTON_BG);
             removeBTN.setBorder(FrontendElements.DELETE_BUTTON_BORDER);
+            
+            removeBTN.addActionListener(event -> {
+                if (sql.deleteElement(ingredient)) {
+                    inventoryScene.updateComboBox();
+                    JOptionPane.showMessageDialog(null, "El ingrediente ha sido eliminado exitosamente", "eliminar ingrediente", JOptionPane.INFORMATION_MESSAGE);
+                } else JOptionPane.showMessageDialog(null, "Ha ocurrido un error al intentar eliminar el ingrediente", "eliminar ingrediente", JOptionPane.ERROR_MESSAGE);
+            });
+
             add(removeBTN);
         } else {
             final JPanel extraPNL = new JPanel();
