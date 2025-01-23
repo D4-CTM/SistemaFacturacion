@@ -10,6 +10,7 @@ import com.facturacion.frontend.InternalClasses.FrontendElements;
 import com.facturacion.frontend.InternalClasses.IndexCard;
 import com.facturacion.frontend.InternalClasses.MenuButtons;
 import com.facturacion.frontend.MenuOptions.EngredientElements.InventoryScene;
+import com.facturacion.frontend.MenuOptions.PlateElements.PlateScene;
 
 public class MenuScene extends JPanel{
     private final float sidePanelPercentage = 0.2f;
@@ -30,6 +31,7 @@ public class MenuScene extends JPanel{
         indexPanel.setSize(indexPanelDimension);
 
         indexPanel.add(new InventoryScene(sql, indexPanelDimension), "Inventario");
+        indexPanel.add(new PlateScene(sql, indexPanelDimension), "Menu");
 
         add(indexPanel);
 

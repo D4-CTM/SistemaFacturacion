@@ -55,7 +55,7 @@ public class IngredientElementPanel extends JPanel {
 
         if (removable) {
             final JButton removeBTN = new JButton();
-            removeBTN.setPreferredSize(new Dimension(panelSize.height - 2, panelSize.height - 2));
+            removeBTN.setPreferredSize(new Dimension(panelSize.height - 2, panelSize.height));
             removeBTN.setForeground(FrontendElements.DELETE_BUTTON_FG);
             removeBTN.setBackground(FrontendElements.DELETE_BUTTON_BG);
             removeBTN.setBorder(FrontendElements.DELETE_BUTTON_BORDER);

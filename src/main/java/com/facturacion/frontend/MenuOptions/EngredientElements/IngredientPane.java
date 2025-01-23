@@ -85,7 +85,8 @@ public class IngredientPane {
 
         ingredientPNL.add(acceptBTN);
         
-        ingredientDialog = new JDialog((JFrame) null, "agregar ingrediente", true);
+        ingredientDialog = new JDialog((JFrame) null, "Ingredientes", true);
+        ingredientDialog.setResizable(false);
         ingredientDialog.add(ingredientPNL);
         ingredientDialog.pack();
 
@@ -109,8 +110,8 @@ public class IngredientPane {
             Ingredient ingredient = new Ingredient(ingredientNameFLD.getText(), ingredientUnitBox.getSelectedItem().toString(), Float.parseFloat(ingredientQuantitySPNR.getValue().toString()));
             if (sql.insertElement(ingredient)) {
                 ingredientDialog.dispose();
-                JOptionPane.showMessageDialog(null, "Se ha agregado exitosamente el ingrediente.", "Inserción exitosa", JOptionPane.INFORMATION_MESSAGE);
-            } else JOptionPane.showMessageDialog(null, "No se ha podido ingresar el elemento en la base de datos, los motivos pueden ser:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un elemento con dicho nombre, por favor intente con un nombre distinto.", "Error al ingresar ingrediente", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "¡Se ha agregado exitosamente el ingrediente¡", "Inserción exitosa", JOptionPane.INFORMATION_MESSAGE);
+            } else JOptionPane.showMessageDialog(null, "¡No se ha podido ingresar el elemento en la base de datos!! :os motivos pueden ser:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un elemento con dicho nombre, por favor intente con un nombre distinto.", "Error al ingresar ingrediente", JOptionPane.WARNING_MESSAGE);
 
         } else {
         
@@ -125,8 +126,8 @@ public class IngredientPane {
 
             if (sql.modifyElement(ingredient)) {
                 ingredientDialog.dispose();
-                JOptionPane.showMessageDialog(null, "Se ha modificado exitosamente el ingrediente.", "Modificacion exitosa", JOptionPane.INFORMATION_MESSAGE);
-            } else JOptionPane.showMessageDialog(null, "No se ha podido modificar el ingrediente, los motivos pueden ser:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un elemento con dicho nombre, por favor intente con un nombre distinto.\", \"Error al ingresar ingrediente", "Error al modificar ingrediente", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "¡Se ha modificado exitosamente el ingrediente!", "Modificacion exitosa", JOptionPane.INFORMATION_MESSAGE);
+            } else JOptionPane.showMessageDialog(null, "¡No se ha podido modificar el ingrediente! Los motivos pueden ser:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un elemento con dicho nombre, por favor intente con un nombre distinto.\", \"Error al ingresar ingrediente", "Error al modificar ingrediente", JOptionPane.WARNING_MESSAGE);
         }
     }
 

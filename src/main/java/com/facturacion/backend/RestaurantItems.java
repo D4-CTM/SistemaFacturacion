@@ -72,7 +72,8 @@ public class RestaurantItems {
             id = _id;
         }
 
-        public Plate(String _name) {
+        public Plate(String _name, float _price) {
+            price = _price;
             name = _name;
             frequency = 0;
         }

@@ -1,6 +1,8 @@
 package com.facturacion.frontend;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import com.facturacion.backend.SQLConnection;
 import com.facturacion.backend.UserManager;
 import com.facturacion.backend.UserManager.UserManagerException;
@@ -14,8 +16,8 @@ import java.awt.Toolkit;
 public class MainFrame extends JFrame {
     
     private final Dimension getUsableSpaceDimension() {
-        pack();
         setVisible(true);
+        pack();
         Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
         Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
         Insets frameInsets = getInsets();
@@ -29,18 +31,21 @@ public class MainFrame extends JFrame {
     public MainFrame(String FrameName) throws IOException, UserManagerException {
         final SQLConnection sql = new SQLConnection("joush", "Delcids4312");
         final UserManager userManager = new UserManager();
-        final Dimension frameSize = getUsableSpaceDimension();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(frameSize);
-        setResizable(false);
-
-        IndexCard indexCard = new IndexCard();
-
-        indexCard.add(new LogInScene(indexCard, userManager, frameSize), "LogIn");
-        indexCard.add(new MenuScene(indexCard, sql, frameSize), "InventoryMenu");
-        indexCard.show("InventoryMenu");
-
-        add(indexCard);
+        SwingUtilities.invokeLater(() -> {
+            final Dimension frameSize = getUsableSpaceDimension();
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setSize(frameSize);
+            
+            IndexCard indexCard = new IndexCard();
+            
+            indexCard.add(new LogInScene(indexCard, userManager, frameSize), "LogIn");
+            indexCard.add(new MenuScene(indexCard, sql, frameSize), "InventoryMenu");
+            indexCard.show("InventoryMenu");
+            
+            add(indexCard);
+            pack();
+            setResizable(false);
+        });
     }
 
 }

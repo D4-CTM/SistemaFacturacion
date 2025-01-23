@@ -12,14 +12,16 @@ import javax.swing.JTextField;
 
 import com.facturacion.backend.RestaurantItems.Ingredient;
 import com.facturacion.backend.RestaurantItems.Items;
+import com.facturacion.backend.RestaurantItems.Plate;
 import com.facturacion.frontend.MenuOptions.EngredientElements.IngredientPane;
 import com.facturacion.frontend.MenuOptions.EngredientElements.InventoryScene;
+import com.facturacion.frontend.MenuOptions.PlateElements.PlateDialog;
 import com.facturacion.backend.SQLConnection;
 
 public class OptionsHeader extends JPanel {
     private final String SEARCH_BAR_DEFAULT_TEXT; 
 
-    public OptionsHeader(SQLConnection sql, Dimension headerSize, Items item, Object itemPane, Object inventoryScene) {
+    public OptionsHeader(SQLConnection sql, Dimension headerSize, Items item, Object itemPane, Object itemScene) {
         
 
         SEARCH_BAR_DEFAULT_TEXT = switch (item) {
@@ -73,28 +75,52 @@ public class OptionsHeader extends JPanel {
                 
                 if (item == Items.Ingredient) {
 
-                    Ingredient ingredient = searchIngredient(sql, item, Integer.parseInt(product));
+                    Ingredient ingredient = (Ingredient) sql.fetch(Integer.parseInt(product), item);
                     if (ingredient == null) {
                         JOptionPane.showMessageDialog(null, "No se ha podido encontrar ningun ingrediente con el id: " + product, "No encontrado", JOptionPane.WARNING_MESSAGE);
                         return ;
                     }
 
                     ((IngredientPane) itemPane).modifyIngredient(ingredient);
-                    ((InventoryScene) inventoryScene).updateComboBox();
+                    ((InventoryScene) itemScene).updateComboBox();
+                
+                } else if (item == Items.Plate) {
+
+                    Plate plate = (Plate) sql.fetch(Integer.parseInt(product), item);
+                    if (plate == null) {
+                        JOptionPane.showMessageDialog(null, "No se ha podido encontrar ningun platillo con el id: " + product, "No encontrado", JOptionPane.WARNING_MESSAGE);
+                        return ;
+                    }
+
+                    ((PlateDialog) itemPane).modifyPlate(plate);
+//                    ((InventoryScene) itemScene).updateComboBox();
+     
                 }
                 
             } else {
 
                 if (item == Items.Ingredient) {
 
-                    Ingredient ingredient = searchIngredient(sql, item, product);
+                    Ingredient ingredient = (Ingredient) sql.fetch(product, item);
                     if (ingredient == null) {
                         JOptionPane.showMessageDialog(null, "No se ha podido encontrar ningun ingrediente llamado: " + product, "No encontrado", JOptionPane.WARNING_MESSAGE);
                         return ;
                     }
     
                     ((IngredientPane) itemPane).modifyIngredient(ingredient);
-                    ((InventoryScene) inventoryScene).updateComboBox();
+                    ((InventoryScene) itemScene).updateComboBox();
+
+                } else if (item == Items.Plate) {
+
+                    Plate plate = (Plate) sql.fetch(product, item);
+                    if (plate == null) {
+                        JOptionPane.showMessageDialog(null, "No se ha podido encontrar ningun platillo con el id: " + product, "No encontrado", JOptionPane.WARNING_MESSAGE);
+                        return ;
+                    }
+
+                    ((PlateDialog) itemPane).modifyPlate(plate);
+//                    ((InventoryScene) itemScene).updateComboBox();
+
                 }
 
             }
@@ -125,29 +151,12 @@ public class OptionsHeader extends JPanel {
         ingredientBTN.addActionListener(event -> {
             if (item == Items.Ingredient) {
                 ((IngredientPane) itemPane).createIngredient();
-                ((InventoryScene) inventoryScene).updateComboBox();
+                ((InventoryScene) itemScene).updateComboBox();
+            } else if (item == Items.Plate) {
+                ((PlateDialog) itemPane).createPlate();
             }
         });
 
-    }
-
-    private Ingredient searchIngredient(SQLConnection sql, Items searchMode, int id) {
-        Object object = sql.fetch(id, Items.Ingredient);
-        if (object != null && object instanceof Ingredient ingredient) {
-            return ingredient;
-        }
-
-        return null;
-    }
-
-
-    private Ingredient searchIngredient(SQLConnection sql, Items searchMode, String name) {
-        Object object = sql.fetch(name, Items.Ingredient);
-        if (object != null && object instanceof Ingredient ingredient) {
-            return ingredient;
-        }
-
-        return null;
     }
 
     //checks if the string contains only numbers.
