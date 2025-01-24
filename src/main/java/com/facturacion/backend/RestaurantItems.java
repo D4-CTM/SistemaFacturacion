@@ -23,18 +23,18 @@ public class RestaurantItems {
             plate_id = _plate_id;
         }
 
-        public void insertRecipeIngredient(Connection connection) {
+        public boolean insertRecipeIngredient(Connection connection) {
             String sqlStatement = "INSERT INTO recetas(id_plato, id_ingrediente, cantidad_necesaria) VALUES(?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
                 preparedStatement.setInt(1, plate_id);
                 preparedStatement.setInt(2, ingredient_id);
                 preparedStatement.setDouble(3, ingredient_needed);
 
-                preparedStatement.executeUpdate();
-                connection.commit();
+                return preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            return false;
         }
 
         public boolean deleteRecipeIngredient(Connection connection) {
@@ -43,12 +43,25 @@ public class RestaurantItems {
                 preparedStatement.setInt(1, plate_id);
                 preparedStatement.setInt(2, ingredient_id);
 
-                preparedStatement.executeUpdate();
-                connection.commit();
-                return true;
+                return preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            return false;
+        }
+
+        public boolean updateRecipeIngredient(Connection connection) {
+            String sql = "UPDATE recetas SET cantidad_necesaria = ? WHERE id_ingrediente = ? AND id_plato = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setFloat(1, ingredient_needed);
+                preparedStatement.setInt(2, ingredient_id);
+                preparedStatement.setInt(3, plate_id);
+
+                return preparedStatement.executeUpdate() > 0;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
             return false;
         }
 
@@ -99,9 +112,7 @@ public class RestaurantItems {
                 preparedStatement.setFloat(3, price);
                 preparedStatement.setInt(4, id);
 
-                preparedStatement.executeUpdate();
-                connection.commit();
-                return true;
+                return preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -115,9 +126,7 @@ public class RestaurantItems {
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
                 preparedStatement.setInt(1, id);
 
-                preparedStatement.executeUpdate();
-                connection.commit();
-                return false;
+               return preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -125,24 +134,18 @@ public class RestaurantItems {
         }
 
         public boolean insertPlate(Connection connection) {
-            String sqlStatement = "INSERT INTO platos(nombre, frecuencia, precio) VALUES(?, ?, ?)";
+            String sqlStatement = "INSERT INTO platos(nombre, frecuencia, precio) VALUES(?, ?, ?) RETURNING id";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
                 preparedStatement.setString(1, name);
                 preparedStatement.setInt(2, frequency);
                 preparedStatement.setFloat(3, price);
 
-                int affectedRows = preparedStatement.executeUpdate();
-                if (affectedRows > 0) {
-
-                    try (ResultSet key = preparedStatement.getGeneratedKeys()) {
-                        while (key.next()) {
-                            id = key.getInt(1);
-                        }
+                try (ResultSet key = preparedStatement.executeQuery()) {
+                    if (key.next()) {
+                        id = key.getInt(1);
+                        return true;
                     }
-
                 }
-                connection.commit();
-                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -191,10 +194,7 @@ public class RestaurantItems {
                 preparedStatement.setFloat(3, quantity);
                 preparedStatement.setInt(4, id);
 
-                if (preparedStatement.executeUpdate() > 0) {
-                    connection.commit();
-                    return true;
-                }
+                return preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -208,9 +208,7 @@ public class RestaurantItems {
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
                 preparedStatement.setInt(1, id);
 
-                preparedStatement.executeUpdate();
-                connection.commit();
-                return true;
+                return preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -218,25 +216,18 @@ public class RestaurantItems {
         }
 
         public boolean insertIngredient(Connection connection) {
-            String sqlStatement = "INSERT INTO ingredientes(nombre, unidad, cantidad) VALUES(?, ?, ?)";
+            String sqlStatement = "INSERT INTO ingredientes(nombre, unidad, cantidad) VALUES(?, ?, ?) RETURNING id";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)) {
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, unit);
                 preparedStatement.setFloat(3, quantity);
                 
-                int affectedRows = preparedStatement.executeUpdate();
-                if (affectedRows > 0) {
-
-                    try (ResultSet key = preparedStatement.getGeneratedKeys()) {
-                        while (key.next()) {
-                            id = key.getInt(1);
-                        }
+                try (ResultSet key = preparedStatement.executeQuery()) {
+                    if (key.next()) {
+                        id = key.getInt(1);
+                        return true;
                     }
-
                 }
-
-                connection.commit();
-                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }

@@ -13,7 +13,8 @@ import com.zaxxer.hikari.HikariDataSource;
 public class SQLConnection {
     private final HikariDataSource hikari;
     private final int OPP = 10; //OBJECTS PER PAGE
-    private int offset = 0;
+    private int ingredientOffset = 0;
+    private int plateOffset = 0;
 
     public SQLConnection(final String _username, final String _password) {
         hikari = new HikariDataSource();
@@ -50,22 +51,162 @@ public class SQLConnection {
         return -1;
     }
 
+    public boolean insertPlate(Plate plate, LinkedList<String> namesList, LinkedList<Float> quantityList) {
+        try (Connection connection = getConnection()) {
+            connection.setAutoCommit(false);
+            if (!plate.insertPlate(connection)) {
+                return false;
+            }
+            
+            if (namesList.isEmpty()) {
+                connection.commit();
+                return true;
+            }
+            final int plateId = plate.id;
+            LinkedList<Integer> idsList = getIdsOf(namesList);
+            
+            if (idsList.size() != quantityList.size()) {
+                return false;
+            }
+
+            var quantityIt = quantityList.iterator();
+            var idIt = idsList.iterator();
+
+            if (quantityIt.hasNext()) {
+                RecipeIngredient recipeIngredient;
+                do {
+                    recipeIngredient = new RecipeIngredient(quantityIt.next(), plateId, idIt.next());
+
+                    if (!recipeIngredient.insertRecipeIngredient(connection)) return false;
+                } while (quantityIt.hasNext());
+            }
+
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } 
+        return false;
+    }
+
+    public LinkedList<Integer> getIdsOf(LinkedList<String> names) {
+        String sql = "SELECT id FROM ingredientes WHERE ";
+        var name = names.iterator();
+        do {
+            sql += " nombre = \'" + name.next() + "\'";
+            if (!name.hasNext()) {
+                sql += ";";
+            } else sql += " OR ";
+        } while (name.hasNext());
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+                if (!resultSet.next()) return null;
+                LinkedList<Integer> list = new LinkedList<>();
+                do {
+                    list.add(resultSet.getInt("id"));
+                } while (resultSet.next());
+                return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public String getNameOf(int elementId, Items item) {
+        if (elementId < 0) return "";
+        String sql = switch (item) {
+            case Ingredient -> {
+                yield "SELECT nombre FROM ingredientes WHERE id = ?";
+            }
+
+            case Plate -> {
+                yield "SELECT nombre FROM platos WHERE id = ?";
+            }
+
+            default -> {
+                throw new IllegalArgumentException("Recetas no cuenta con algun campo de id en particular");
+            }
+        };
+
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            preparedStatement.setInt(1, elementId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (!resultSet.next()) return "";
+                return resultSet.getString("nombre");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
+    public LinkedList<String> getIngredientsNames() {
+        String sql = "SELECT nombre FROM ingredientes WHERE id > 0 ORDER BY id;";
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)){
+                if (!resultSet.next()) return null;
+                LinkedList<String> list = new LinkedList<>();
+
+                do {
+                    list.add(resultSet.getString("nombre"));
+                } while (resultSet.next());
+
+                return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } 
+
+        return null;
+    }
+
+
     public LinkedList<Ingredient> getIngredientsAt(int page) {
-        offset = page * OPP;
+        ingredientOffset = page * OPP;
         return getCurrentIngredients();
     }
 
     public LinkedList<Ingredient> getCurrentIngredients() {
-        String sql = "SELECT * FROM ingredientes WHERE id > 0 OFFSET ? LIMIT ?";
+        String sql = "SELECT * FROM ingredientes WHERE id > 0 ORDER BY id OFFSET ? LIMIT ?";
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
-                preparedStatement.setInt(1, offset);
+                preparedStatement.setInt(1, ingredientOffset);
                 preparedStatement.setInt(2, OPP);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     LinkedList<Ingredient> list = new LinkedList<>();
                     if (!resultSet.next()) return list;
                     do {
                         list.add((Ingredient) identifyItem(Items.Ingredient, resultSet));
+                    } while (resultSet.next());
+                    return list;
+                }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public LinkedList<Plate> getPlatesAt(int page) {
+        plateOffset = page * OPP;
+        return getCurrentPlates();
+    }
+
+    public LinkedList<Plate> getCurrentPlates() {
+        String sql = "SELECT * FROM platos WHERE id > 0 ORDER BY id OFFSET ? LIMIT ?";
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+                preparedStatement.setInt(1, plateOffset);
+                preparedStatement.setInt(2, OPP);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    LinkedList<Plate> list = new LinkedList<>();
+                    if (!resultSet.next()) return list;
+                    do {
+                        list.add((Plate) identifyItem(Items.Plate, resultSet));
                     } while (resultSet.next());
                     return list;
                 }
@@ -167,7 +308,6 @@ public class SQLConnection {
 
     public boolean insertElement(Object element) {
         try (Connection connection = getConnection()) {
-            connection.setAutoCommit(false);
 
             if (element instanceof Plate plate) {
                 
@@ -178,7 +318,9 @@ public class SQLConnection {
                 return ingredient.insertIngredient(connection);
 
             } else if (element instanceof RecipeIngredient recipeIngredient) {
-                recipeIngredient.insertRecipeIngredient(connection);
+
+                return recipeIngredient.insertRecipeIngredient(connection);
+
             }
 
         } catch (SQLException e) {
@@ -190,7 +332,6 @@ public class SQLConnection {
     
     public boolean deleteElement(Object element) {
         try (Connection connection = getConnection()) {
-            connection.setAutoCommit(false);
             if (element instanceof Plate plate) {
                 return plate.deletePlate(connection);
             } else if (element instanceof Ingredient ingredient) {
@@ -207,11 +348,13 @@ public class SQLConnection {
 
     public boolean modifyElement(Object element) {
         try (Connection connection = getConnection()) {
-            connection.setAutoCommit(false);
+
             if (element instanceof Plate plate) {
                 return plate.updatePlate(connection);
             } else if (element instanceof Ingredient ingredient) {
                 return ingredient.updateIngredient(connection);
+            } else if (element instanceof RecipeIngredient recipeIngredient) {
+                return recipeIngredient.updateRecipeIngredient(connection);
             }
 
         } catch (SQLException e) {

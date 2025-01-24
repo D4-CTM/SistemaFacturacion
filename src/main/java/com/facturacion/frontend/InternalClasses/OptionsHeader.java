@@ -93,7 +93,7 @@ public class OptionsHeader extends JPanel {
                     }
 
                     ((PlateDialog) itemPane).modifyPlate(plate);
-//                    ((InventoryScene) itemScene).updateComboBox();
+//                    ((PlateScene) itemScene).updateComboBox();
      
                 }
                 
@@ -119,7 +119,7 @@ public class OptionsHeader extends JPanel {
                     }
 
                     ((PlateDialog) itemPane).modifyPlate(plate);
-//                    ((InventoryScene) itemScene).updateComboBox();
+//                    ((PlateScene) itemScene).updateComboBox();
 
                 }
 

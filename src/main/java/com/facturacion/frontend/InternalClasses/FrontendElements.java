@@ -28,11 +28,15 @@ public class FrontendElements {
 //Search bar colors - to combine with the general color scheme
     public static final Color FOCUSED_SEARCH_BAR = OUTER_FG;
     public static final Color UNFOCUSED_SEARCH_BAR = DEFAULT_BG;
-//Ingredient color scheme - to combine with the general color scheme
-    public static final Color INGREDIENT_PANEL_HEADER_BG = Color.WHITE;
-    public static final Color INGREDIENT_PANEL_HEADER_FG = Color.BLACK;
-    public static final Color UNSELECTED_INGREDIENT_PANEL_BG = Color.LIGHT_GRAY;
-    public static final Color UNSELECTED_INGREDIENT_PANEL_FG = Color.BLACK;
-    public static final Color SELECTED_INGREDIENT_PANEL_BG = Color.DARK_GRAY;
-    public static final Color SELECTED_INGREDIENT_PANEL_FG = Color.WHITE;
+//Elements color scheme - to combine with the general color scheme
+    public static final Color ITEM_PANEL_HEADER_BG = Color.WHITE;
+    public static final Color ITEM_PANEL_HEADER_FG = Color.BLACK;
+    
+    public static final Color UNSELECTED_ITEM_PANEL_BG = Color.LIGHT_GRAY;
+    public static final Color UNSELECTED_ITEM_PANEL_FG = Color.BLACK;
+    public static final Color SELECTED_ITEM_PANEL_BG = Color.DARK_GRAY;
+    public static final Color SELECTED_ITEM_PANEL_FG = Color.WHITE;
+    
+    public static final Color DEACTIVATED_PANEL_BG = UNSELECTED_ITEM_PANEL_BG;
+    public static final Color DEACTIVATED_PANEL_FG = new Color(255, 255, 255, 127);
 }

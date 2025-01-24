@@ -103,7 +103,6 @@ public class InventoryScene extends JPanel {
         
         comboBox.setModel(createComboBoxModel());
         comboBox.setSelectedIndex(selectedPage);
-        
     }
 
     public void modifyIngredient(Ingredient ingredient) {
@@ -130,8 +129,8 @@ public class InventoryScene extends JPanel {
             ingredientElementPanel.setMaximumSize(ingredientDimension);
             ingredientPanel.add(ingredientElementPanel);
         }
-        ingredientPanel.repaint();
         ingredientPanel.revalidate();
+        ingredientPanel.repaint();
     }
 
     private final JPanel ingredientPanel;

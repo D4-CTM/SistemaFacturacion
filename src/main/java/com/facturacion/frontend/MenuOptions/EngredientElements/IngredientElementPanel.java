@@ -30,8 +30,8 @@ public class IngredientElementPanel extends JPanel {
 
 
         if (removable) {
-            setBackground(FrontendElements.UNSELECTED_INGREDIENT_PANEL_BG);
-        } else setBackground(FrontendElements.INGREDIENT_PANEL_HEADER_BG);
+            setBackground(FrontendElements.UNSELECTED_ITEM_PANEL_BG);
+        } else setBackground(FrontendElements.ITEM_PANEL_HEADER_BG);
         
         final int usableWidth = panelSize.width - panelSize.height;
         
@@ -76,7 +76,7 @@ public class IngredientElementPanel extends JPanel {
         }
 
         for (final Component component : getComponents()) {
-            component.setForeground(removable ? FrontendElements.UNSELECTED_INGREDIENT_PANEL_FG : FrontendElements.INGREDIENT_PANEL_HEADER_FG);
+            component.setForeground(removable ? FrontendElements.UNSELECTED_ITEM_PANEL_FG : FrontendElements.ITEM_PANEL_HEADER_FG);
             if (component instanceof JLabel LBL) {
                 LBL.setFont(FrontendElements.SystemFont);
                 LBL.setBorder(FrontendElements.DEFAULT_BORDER);
@@ -90,15 +90,19 @@ public class IngredientElementPanel extends JPanel {
                 @Override
                 public void mouseClicked(MouseEvent arg0) {
                     inventoryScene.modifyIngredient(ingredient);
+                    nameLBL.setText(ingredient.name);
+                    quantityLBL.setText(ingredient.quantity + " " + ingredient.unit);
+                    revalidate();
+                    repaint();
                 }
     
                 @Override
                 public void mouseEntered(MouseEvent arg0) {
                     setOpaque(true);
-                    setBackground(FrontendElements.SELECTED_INGREDIENT_PANEL_BG);
+                    setBackground(FrontendElements.SELECTED_ITEM_PANEL_BG);
                     for (final Component component : getComponents()) {
                         if (component instanceof JLabel lbl) {
-                            lbl.setForeground(FrontendElements.SELECTED_INGREDIENT_PANEL_FG);
+                            lbl.setForeground(FrontendElements.SELECTED_ITEM_PANEL_FG);
                         }
                     }
                 }
@@ -106,10 +110,10 @@ public class IngredientElementPanel extends JPanel {
                 @Override
                 public void mouseExited(MouseEvent arg0) {
                     setOpaque(false);
-                    setBackground(FrontendElements.UNSELECTED_INGREDIENT_PANEL_BG);
+                    setBackground(FrontendElements.UNSELECTED_ITEM_PANEL_BG);
                     for (final Component component : getComponents()) {
                         if (component instanceof JLabel lbl) {
-                            lbl.setForeground(FrontendElements.UNSELECTED_INGREDIENT_PANEL_FG);
+                            lbl.setForeground(FrontendElements.UNSELECTED_ITEM_PANEL_FG);
                         }
                     }
                 }
