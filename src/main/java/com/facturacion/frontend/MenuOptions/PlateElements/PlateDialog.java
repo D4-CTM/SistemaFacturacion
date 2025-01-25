@@ -122,12 +122,15 @@ public class PlateDialog {
 
                 if (sql.insertPlate(plate, recipeIngredientsList, quantityList)) {
                     JOptionPane.showMessageDialog(null, "¡Se ha agregado el platillo exitosamente!", "Platillo", JOptionPane.INFORMATION_MESSAGE);
-                    plateDialog.setVisible(false);;
+                    plateDialog.setVisible(false);
                 } else JOptionPane.showMessageDialog(null, "¡Ha ocurrido un error agregando el platillo! Por favor revise lo siguiente:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un platillo con dicho nombre, por favor intente con un nombre distinto.", "Platillo", JOptionPane.INFORMATION_MESSAGE);
             } else {
+                plate.name = nameFLD.getText();
+                plate.price = Float.parseFloat(priceSPNR.getValue().toString());
+
                 if (sql.modifyElement(plate)) {
                     JOptionPane.showMessageDialog(null, "¡Se ha modificado el platillo exitosamente!", "Platillo", JOptionPane.INFORMATION_MESSAGE);
-                    plateDialog.setVisible(false);;
+                    plateDialog.setVisible(false);
                 } else JOptionPane.showMessageDialog(null, "¡Ha ocurrido un error modificando el platillo! Por favor revise lo siguiente:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un platillo con dicho nombre, por favor intente con un nombre distinto.", "Platillo", JOptionPane.INFORMATION_MESSAGE);
             }
         });

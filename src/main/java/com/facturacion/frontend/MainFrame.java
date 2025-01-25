@@ -22,6 +22,7 @@ public class MainFrame extends JFrame {
         Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
         Insets frameInsets = getInsets();
 
+        setVisible(false);
         return new Dimension(
             screenDimension.width - insets.left - insets.right - frameInsets.left - frameInsets.right,
             screenDimension.height - insets.top - insets.bottom - frameInsets.top - frameInsets.bottom
@@ -34,16 +35,16 @@ public class MainFrame extends JFrame {
         SwingUtilities.invokeLater(() -> {
             final Dimension frameSize = getUsableSpaceDimension();
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setSize(frameSize);
-            
             IndexCard indexCard = new IndexCard();
-            
+            indexCard.setSize(frameSize);
+
             indexCard.add(new LogInScene(indexCard, userManager, frameSize), "LogIn");
             indexCard.add(new MenuScene(indexCard, sql, frameSize), "InventoryMenu");
             indexCard.show("InventoryMenu");
             
             add(indexCard);
             pack();
+            setVisible(true);
             setResizable(false);
         });
     }

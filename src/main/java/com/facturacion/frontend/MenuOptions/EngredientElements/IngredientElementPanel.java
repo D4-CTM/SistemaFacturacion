@@ -61,6 +61,9 @@ public class IngredientElementPanel extends JPanel {
             removeBTN.setBorder(FrontendElements.DELETE_BUTTON_BORDER);
             
             removeBTN.addActionListener(event -> {
+                int option = JOptionPane.showConfirmDialog(null, "¿Esta seguro que desea eliminar este ingrediente del inventario?\nHacer esto podria afectar la receta de varios platillos.", "Eliminar ingrediente", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                if (option != JOptionPane.YES_OPTION) return ;
+
                 if (sql.deleteElement(ingredient)) {
                     inventoryScene.updateComboBox();
                     JOptionPane.showMessageDialog(null, "El ingrediente ha sido eliminado exitosamente", "eliminar ingrediente", JOptionPane.INFORMATION_MESSAGE);

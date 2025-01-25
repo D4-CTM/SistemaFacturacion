@@ -16,13 +16,13 @@ import com.facturacion.backend.RestaurantItems.Plate;
 import com.facturacion.frontend.MenuOptions.EngredientElements.IngredientPane;
 import com.facturacion.frontend.MenuOptions.EngredientElements.InventoryScene;
 import com.facturacion.frontend.MenuOptions.PlateElements.PlateDialog;
+import com.facturacion.frontend.MenuOptions.PlateElements.PlateScene;
 import com.facturacion.backend.SQLConnection;
 
 public class OptionsHeader extends JPanel {
     private final String SEARCH_BAR_DEFAULT_TEXT; 
 
     public OptionsHeader(SQLConnection sql, Dimension headerSize, Items item, Object itemPane, Object itemScene) {
-        
 
         SEARCH_BAR_DEFAULT_TEXT = switch (item) {
             case Ingredient -> {
@@ -93,7 +93,7 @@ public class OptionsHeader extends JPanel {
                     }
 
                     ((PlateDialog) itemPane).modifyPlate(plate);
-//                    ((PlateScene) itemScene).updateComboBox();
+                    ((PlateScene) itemScene).updateComboBox();
      
                 }
                 
@@ -119,7 +119,7 @@ public class OptionsHeader extends JPanel {
                     }
 
                     ((PlateDialog) itemPane).modifyPlate(plate);
-//                    ((PlateScene) itemScene).updateComboBox();
+                    ((PlateScene) itemScene).updateComboBox();
 
                 }
 
@@ -154,6 +154,7 @@ public class OptionsHeader extends JPanel {
                 ((InventoryScene) itemScene).updateComboBox();
             } else if (item == Items.Plate) {
                 ((PlateDialog) itemPane).createPlate();
+                ((PlateScene) itemScene).updateComboBox();
             }
         });
 

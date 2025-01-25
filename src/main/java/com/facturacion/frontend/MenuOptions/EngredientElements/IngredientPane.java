@@ -119,7 +119,7 @@ public class IngredientPane {
             if (sql.modifyElement(ingredient)) {
                 ingredientDialog.dispose();
                 JOptionPane.showMessageDialog(null, "¡Se ha modificado exitosamente el ingrediente!", "Modificacion exitosa", JOptionPane.INFORMATION_MESSAGE);
-            } else JOptionPane.showMessageDialog(null, "¡No se ha podido modificar el ingrediente! Los motivos pueden ser:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un elemento con dicho nombre, por favor intente con un nombre distinto.\", \"Error al ingresar ingrediente", "Error al modificar ingrediente", JOptionPane.WARNING_MESSAGE);
+            } else JOptionPane.showMessageDialog(null, "¡No se ha podido modificar el ingrediente! Los motivos pueden ser:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un elemento con dicho nombre, por favor intente con un nombre distinto.", "Error al modificar ingrediente", JOptionPane.WARNING_MESSAGE);
 
         }
     }
