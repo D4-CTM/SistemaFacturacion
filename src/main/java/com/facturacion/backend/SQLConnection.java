@@ -51,67 +51,96 @@ public class SQLConnection {
         return -1;
     }
 
-    public boolean insertPlate(Plate plate, LinkedList<String> namesList, LinkedList<Float> quantityList) {
+    public LinkedList<RecipeIngredient> fetchRecipeIngredients(Plate plate) {
+        String sql = "SELECT id_ingrediente, cantidad_necesaria FROM recetas WHERE id_plato = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, plate.id);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (!resultSet.next()) return null;
+                    LinkedList<RecipeIngredient> recipeList = new LinkedList<>();
+                    int ingredientId;
+                    float quantityNeeded;
+                    do {
+                        ingredientId = resultSet.getInt("id_ingrediente");
+                        quantityNeeded = resultSet.getFloat("cantidad_necesaria");
+                        recipeList.add(new RecipeIngredient(quantityNeeded, plate.id, ingredientId));
+
+                    } while (resultSet.next());
+                    return recipeList;
+                }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public boolean updatePlateTable(Plate plate, LinkedList<RecipeIngredient> recipeList) {
+        try (Connection connection = getConnection()) {
+            connection.setAutoCommit(false);
+            if (!plate.updatePlate(connection)) {
+                return false;
+            }
+
+            if (recipeActions(recipeList, plate.id, connection)) {
+                connection.commit();
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean insertPlate(Plate plate, LinkedList<RecipeIngredient> recipeList) {
         try (Connection connection = getConnection()) {
             connection.setAutoCommit(false);
             if (!plate.insertPlate(connection)) {
                 return false;
             }
             
-            if (namesList.isEmpty()) {
+            if (recipeActions(recipeList, plate.id, connection)) {
                 connection.commit();
                 return true;
             }
-            final int plateId = plate.id;
-            LinkedList<Integer> idsList = getIdsOf(namesList);
-            
-            if (idsList.size() != quantityList.size()) {
-                return false;
-            }
-
-            var quantityIt = quantityList.iterator();
-            var idIt = idsList.iterator();
-
-            if (quantityIt.hasNext()) {
-                RecipeIngredient recipeIngredient;
-                do {
-                    recipeIngredient = new RecipeIngredient(quantityIt.next(), plateId, idIt.next());
-
-                    if (!recipeIngredient.insertRecipeIngredient(connection)) return false;
-                } while (quantityIt.hasNext());
-            }
-
-            connection.commit();
-            return true;
         } catch (SQLException e) {
             e.printStackTrace();
         } 
         return false;
     }
 
-    public LinkedList<Integer> getIdsOf(LinkedList<String> names) {
-        String sql = "SELECT id FROM ingredientes WHERE ";
-        var name = names.iterator();
-        do {
-            sql += " nombre = \'" + name.next() + "\'";
-            if (!name.hasNext()) {
-                sql += ";";
-            } else sql += " OR ";
-        } while (name.hasNext());
+    private boolean recipeActions(LinkedList<RecipeIngredient> recipeList, int id, Connection connection) {
+        if (recipeList == null || recipeList.isEmpty()) {
+            return true;
+        }
+        
+        for (final RecipeIngredient recipeIngredient : recipeList) {
+            if (!fetchIdOf(recipeIngredient)) return false;
+
+            recipeIngredient.plate_id = id;
+
+            if (!recipeIngredient.takeAction(connection)) return false;
+        }
+
+        return true;
+    }
+
+    public boolean fetchIdOf(RecipeIngredient recipe) {
+        String sql = "SELECT id FROM ingredientes WHERE nombre = \'" + recipe.ingredient_name + "\';";
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
-                if (!resultSet.next()) return null;
-                LinkedList<Integer> list = new LinkedList<>();
-                do {
-                    list.add(resultSet.getInt("id"));
-                } while (resultSet.next());
-                return list;
+                if (!resultSet.next()) return false;
+                recipe.ingredient_id = resultSet.getInt("id");
+                return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return false;
     }
 
     public String getNameOf(int elementId, Items item) {
@@ -145,6 +174,21 @@ public class SQLConnection {
         return "";
     }
 
+    public String getUnityOf(String ingredientName) {
+        String sql = "SELECT unidad FROM ingredientes WHERE nombre = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+             statement.setString(1, ingredientName);
+             try (ResultSet resultSet = statement.executeQuery()) {
+                if (!resultSet.next()) return "";
+                return resultSet.getString("unidad");
+             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     public LinkedList<String> getIngredientsNames() {
         String sql = "SELECT nombre FROM ingredientes WHERE id > 0 ORDER BY id;";
         try (Connection connection = getConnection();
@@ -164,7 +208,6 @@ public class SQLConnection {
 
         return null;
     }
-
 
     public LinkedList<Ingredient> getIngredientsAt(int page) {
         ingredientOffset = page * OPP;

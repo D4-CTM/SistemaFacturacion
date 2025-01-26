@@ -97,6 +97,8 @@ public class PlatePanel extends JPanel{
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 plateScene.modifyPlate(plate);
+                nameLBL.setText(plate.name);
+                priceLBL.setText("L." + String.valueOf(plate.price));
                 revalidate();
                 repaint();
             }

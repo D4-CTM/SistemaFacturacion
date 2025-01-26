@@ -12,15 +12,45 @@ public class RestaurantItems {
         Plate
     }
 
+    public static enum Actions {
+        Insert,
+        Update,
+        Delete
+    }
+
     public static class RecipeIngredient {
         public int plate_id = -1;
         public int ingredient_id = -1;
         public float ingredient_needed;
-    
+        public String ingredient_name;
+        public Actions action;
+
         public RecipeIngredient(float _ingredient_needed, int _plate_id, int _ingredient_id) {
             ingredient_needed = _ingredient_needed;
             ingredient_id = _ingredient_id;
             plate_id = _plate_id;
+            action = Actions.Insert;
+        }
+
+        public RecipeIngredient(float _ingredient_needed, String _ingredient_name, Actions _action) {
+            ingredient_needed = _ingredient_needed;
+            ingredient_name = _ingredient_name;
+            action = _action;
+        }
+
+        public RecipeIngredient(float _ingredient_needed, String _ingredient_name) {
+            ingredient_needed = _ingredient_needed;
+            ingredient_name = _ingredient_name;
+            action = Actions.Insert;
+        }
+
+        public boolean takeAction(Connection connection) {
+            switch (action) {
+                case Insert: return insertRecipeIngredient(connection);
+                case Update: return updateRecipeIngredient(connection);
+                case Delete: return deleteRecipeIngredient(connection);
+                default: return false;
+            }
         }
 
         public boolean insertRecipeIngredient(Connection connection) {
@@ -67,9 +97,8 @@ public class RestaurantItems {
 
         @Override
         public String toString() {
-            return "plate id: " + plate_id + "\ningredient id: " + ingredient_id + " \ningredients needed: " + ingredient_needed;
+            return "plate_id: " + plate_id + "\tingrediente_id: " + ingredient_id + "\tingredient_name: " + ingredient_name + "\tingredient_needed: " + ingredient_needed;
         }
-
     }
     
     public static class Plate {
@@ -153,11 +182,6 @@ public class RestaurantItems {
             return false;
         }
 
-        @Override
-        public String toString() {
-            return "id: " + id + "\tname: " + name + "\tfrequency: " + frequency;
-        }
-
     }
     
     public static class Ingredient {
@@ -236,11 +260,6 @@ public class RestaurantItems {
 
         public boolean isValid() {
             return !name.isBlank() && quantity >= 0;
-        }
-
-        @Override
-        public String toString() {
-            return "id: " + id + " name: " + name + " quantity: " + quantity + " " + unit;
         }
 
     }

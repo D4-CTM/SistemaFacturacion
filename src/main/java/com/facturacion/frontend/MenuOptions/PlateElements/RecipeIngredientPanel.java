@@ -13,12 +13,10 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import com.facturacion.backend.SQLConnection;
-import com.facturacion.backend.RestaurantItems.Ingredient;
-import com.facturacion.backend.RestaurantItems.Items;
+import com.facturacion.backend.RestaurantItems.RecipeIngredient;
 import com.facturacion.frontend.InternalClasses.FrontendElements;
 
 public class RecipeIngredientPanel extends JPanel{
-    private String ingredientName;
     private boolean active = true;
 
     public RecipeIngredientPanel(PlateDialog plateDialog, SQLConnection sql, Dimension panelSize) {
@@ -58,19 +56,20 @@ public class RecipeIngredientPanel extends JPanel{
 
             Object option = JOptionPane.showInputDialog(null, "¿Que ingrediente es necesario para realizar esta receta?", "Elegir ingredients", JOptionPane.INFORMATION_MESSAGE, null, list.toArray(), 0);
             if (option == null) return ;
-            final Ingredient ingredient = (Ingredient) sql.fetch(option.toString(), Items.Ingredient);
-
-            plateDialog.addToRecipePanel(new RecipeIngredientPanel(plateDialog, ingredient.name, ingredient.unit, panelSize));
+            String unit = sql.getUnityOf(option.toString());
+            
+            plateDialog.addToRecipePanel(new RecipeIngredientPanel(plateDialog, option.toString(), 0.1f, unit, panelSize));
         });
 
         add(insertBTN);
     }
 
-    public RecipeIngredientPanel(PlateDialog plateDialog, String name, String unit, Dimension panelSize) {
+    public RecipeIngredientPanel(PlateDialog plateDialog, String name, float quantityNeeded, String unit, Dimension panelSize) {
         setPreferredSize(panelSize);
         setMaximumSize(panelSize);
         setMinimumSize(panelSize);
         setLayout(null);
+        setName(name);
         
         nameLBL = new JLabel(name);
         nameLBL.setSize((int) ((panelSize.width - panelSize.height) * 0.4), panelSize.height);
@@ -80,7 +79,7 @@ public class RecipeIngredientPanel extends JPanel{
         add(nameLBL);
 
         
-        quantitySPNR = new JSpinner(new SpinnerNumberModel(0.1, 0.1, 9999999999.99, 0.5));
+        quantitySPNR = new JSpinner(new SpinnerNumberModel(quantityNeeded, 0.01, 9999999999.99, 0.5));
         quantitySPNR.setSize((int) ((panelSize.width - panelSize.height) * 0.6), panelSize.height);
         quantitySPNR.setBorder(FrontendElements.DEFAULT_BORDER);
         quantitySPNR.setFont(FrontendElements.DialogFont);
@@ -123,9 +122,12 @@ public class RecipeIngredientPanel extends JPanel{
                 Object option = JOptionPane.showInputDialog(null, "¿Por cual ingrediente desea reemplazarlo?", "Elegir ingredients", JOptionPane.INFORMATION_MESSAGE, null, list.toArray(), 0);
                 if (option == null) return ;
 
-                plateDialog.reeplaceOnList(ingredientName, option.toString());
-                ingredientName = option.toString();
-                nameLBL.setText(ingredientName);
+                setName(option.toString());
+                nameLBL.setText(option.toString());
+
+                String textExample = "#,##0.00 " + plateDialog.getUnitOf(getName());
+                JSpinner.NumberEditor editor = new JSpinner.NumberEditor(quantitySPNR, textExample);
+                quantitySPNR.setEditor(editor);
             }
 
             @Override
@@ -143,11 +145,10 @@ public class RecipeIngredientPanel extends JPanel{
         });
         unfocusedBG();
 
-        ingredientName = name;
     }
 
-    public String getIngredientName() {
-        return ingredientName;
+    public RecipeIngredient createRecipeIngredient() {
+        return new RecipeIngredient(getPrice(), getName());
     }
 
     public float getPrice() {

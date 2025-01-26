@@ -22,13 +22,12 @@ import com.facturacion.backend.RestaurantItems.*;
 import com.facturacion.frontend.InternalClasses.FrontendElements;
 
 public class PlateDialog {
-    private final LinkedList<String> recipeIngredientsList;
     private final Dimension recipeIngredientDMSN;
     private final SQLConnection sql;
+    private LinkedList<RecipeIngredient> recipeList;
     private Plate plate = null;
-
+    
     public PlateDialog(SQLConnection _sql) {
-        recipeIngredientsList = new LinkedList<>();
         sql = _sql;
 
         final Dimension dialogDMSN = new Dimension(400, 600);
@@ -118,9 +117,8 @@ public class PlateDialog {
 
             if (plate == null) {
                 Plate plate =new Plate(nameFLD.getText(), Float.parseFloat(priceSPNR.getValue().toString()));
-                LinkedList<Float> quantityList = filterIngredientesToInsert();
 
-                if (sql.insertPlate(plate, recipeIngredientsList, quantityList)) {
+                if (sql.insertPlate(plate, createRecipeIngredientsList())) {
                     JOptionPane.showMessageDialog(null, "¡Se ha agregado el platillo exitosamente!", "Platillo", JOptionPane.INFORMATION_MESSAGE);
                     plateDialog.setVisible(false);
                 } else JOptionPane.showMessageDialog(null, "¡Ha ocurrido un error agregando el platillo! Por favor revise lo siguiente:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un platillo con dicho nombre, por favor intente con un nombre distinto.", "Platillo", JOptionPane.INFORMATION_MESSAGE);
@@ -128,7 +126,8 @@ public class PlateDialog {
                 plate.name = nameFLD.getText();
                 plate.price = Float.parseFloat(priceSPNR.getValue().toString());
 
-                if (sql.modifyElement(plate)) {
+                filterRecipeIngredientsList();
+                if (sql.updatePlateTable(plate, recipeList)) {
                     JOptionPane.showMessageDialog(null, "¡Se ha modificado el platillo exitosamente!", "Platillo", JOptionPane.INFORMATION_MESSAGE);
                     plateDialog.setVisible(false);
                 } else JOptionPane.showMessageDialog(null, "¡Ha ocurrido un error modificando el platillo! Por favor revise lo siguiente:\n- Revise su conexion a internet, en caso de haberse perdido intente de nuevo mas tarde.\n- Ya existe un platillo con dicho nombre, por favor intente con un nombre distinto.", "Platillo", JOptionPane.INFORMATION_MESSAGE);
@@ -136,29 +135,23 @@ public class PlateDialog {
         });
     }
 
+    public String getUnitOf(String ingredientName) {
+        return sql.getUnityOf(ingredientName);
+    }
+
     public LinkedList<String> getIngredientsNames() {
         LinkedList<String> ingredientsNames = sql.getIngredientsNames();
         if (ingredientsNames == null) return null;
 
-        for (final String removedIngredient : recipeIngredientsList) {
-            ingredientsNames.remove(removedIngredient);
+        for (final Component ingredientPNL : recipeIngredientPanel.getComponents()) {
+            ingredientsNames.remove(ingredientPNL.getName());
         }
 
         return ingredientsNames;
     }
 
-    public void reeplaceOnList(String oldName, String newName) {
-        recipeIngredientsList.remove(oldName);
-        recipeIngredientsList.add(newName);
-    }
-
-    public void removeFromRecipePanel(final RecipeIngredientPanel rip) {
-        recipeIngredientPanel.remove(rip);
-    }
-
     public void addToRecipePanel(final RecipeIngredientPanel rip) {
         recipeIngredientPanel.add(rip);
-        recipeIngredientsList.add(rip.getIngredientName());
         recipeIngredientPanel.revalidate();
         recipeIngredientPanel.repaint();
     }
@@ -167,9 +160,25 @@ public class PlateDialog {
         plate = _plate;
         nameFLD.setText(plate.name);
         acceptBTN.setText("Modificar");
-        priceSPNR.setValue(_plate.price);
+        priceSPNR.setValue(plate.price);
         recipeIngredientPanel.removeAll();
-        recipeIngredientsList.clear();
+
+        recipeList = sql.fetchRecipeIngredients(plate);
+
+        if (recipeList == null || recipeList.isEmpty()) {
+            plateDialog.setVisible(true);
+            return;
+        }
+
+        RecipeIngredientPanel recipePNL;
+        String unit;
+        for (final RecipeIngredient recipe : recipeList) {
+            recipe.ingredient_name = sql.getNameOf(recipe.ingredient_id, Items.Ingredient);
+            unit = sql.getUnityOf(recipe.ingredient_name);
+            recipePNL = new RecipeIngredientPanel(this, recipe.ingredient_name, recipe.ingredient_needed, unit, recipeIngredientDMSN);
+            recipeIngredientPanel.add(recipePNL);
+        }
+
         plateDialog.setVisible(true);
     }
     
@@ -179,22 +188,65 @@ public class PlateDialog {
         priceSPNR.setValue(100);
         acceptBTN.setText("Agregar");
         recipeIngredientPanel.removeAll();
-        recipeIngredientsList.clear();
         plateDialog.setVisible(true);
     }
 
-    private LinkedList<Float> filterIngredientesToInsert() {
-        LinkedList<Float> floatList = new LinkedList<>();
+    private LinkedList<RecipeIngredient> createRecipeIngredientsList() {
+        LinkedList<RecipeIngredient> recipeIngredients = new LinkedList<>();
         for (final Component component : recipeIngredientPanel.getComponents()) {
-            if (component instanceof RecipeIngredientPanel rip) {
-                if (!rip.isActive() && recipeIngredientsList.contains(rip.getIngredientName())) {
-                    recipeIngredientsList.remove(rip.getIngredientName());
-                } else {
-                    floatList.add(rip.getPrice());
-                }
+            if (component instanceof RecipeIngredientPanel rip && rip.isActive()) {
+                recipeIngredients.add(rip.createRecipeIngredient());
             }
         }
-        return floatList;
+        return recipeIngredients.isEmpty() ? null : recipeIngredients;
+    }
+
+    private void filterRecipeIngredientsList() {
+        if (recipeList == null) {
+            recipeList = createRecipeIngredientsList();
+            return;
+        }
+
+        LinkedList<RecipeIngredient> toAddRecipes = new LinkedList<>();
+        var recipeIt = recipeList.iterator();
+
+        RecipeIngredient originalRecipe;
+        RecipeIngredient newRecipe;
+        for (final Component component : recipeIngredientPanel.getComponents()) {
+            if (component instanceof RecipeIngredientPanel rip) {
+                newRecipe = rip.createRecipeIngredient();                
+                if (!recipeIt.hasNext()) {
+                    newRecipe.action = Actions.Insert;
+                    toAddRecipes.addLast(newRecipe);
+                    continue;
+                }
+                originalRecipe = recipeIt.next();
+                
+                if (!originalRecipe.ingredient_name.equals(newRecipe.ingredient_name)) {
+                    originalRecipe.action = Actions.Delete;
+                    newRecipe.action = Actions.Insert;
+                    toAddRecipes.addLast(newRecipe);
+                    continue;
+                }
+
+                if (!rip.isActive()) {
+                    originalRecipe.action = Actions.Delete;
+                    continue;
+                }
+
+                if (originalRecipe.ingredient_needed == rip.getPrice()) {
+                    recipeIt.remove();
+                } else {
+                    originalRecipe.ingredient_needed = rip.getPrice();
+                    originalRecipe.action = Actions.Update;
+                }
+                
+
+            }
+
+        }
+
+        recipeList.addAll(toAddRecipes);
     }
 
     private final JButton acceptBTN;
