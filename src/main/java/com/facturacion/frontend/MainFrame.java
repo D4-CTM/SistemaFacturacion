@@ -30,7 +30,7 @@ public class MainFrame extends JFrame {
     }
 
     public MainFrame(String FrameName) throws IOException, UserManagerException {
-        final SQLConnection sql = new SQLConnection("joush", "Delcids4312");
+        final SQLConnection sql = new SQLConnection("restaurante", "restaurante4312");
         final UserManager userManager = new UserManager();
         SwingUtilities.invokeLater(() -> {
             final Dimension frameSize = getUsableSpaceDimension();
@@ -40,7 +40,7 @@ public class MainFrame extends JFrame {
 
             indexCard.add(new LogInScene(indexCard, userManager, frameSize), "LogIn");
             indexCard.add(new MenuScene(indexCard, sql, frameSize), "InventoryMenu");
-            indexCard.show("InventoryMenu");
+            indexCard.show("LogIn");
             
             add(indexCard);
             pack();
