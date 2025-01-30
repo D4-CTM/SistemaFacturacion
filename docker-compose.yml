@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  restaurante:
+    image: postgres:16.3
+    container_name: restaurante
+    hostname: restaurante
+    restart: unless-stopped
+    ports:
+      - 5440:5432
+    environment: 
+      POSTGRES_USER: restaurante
+      POSTGRES_PASSWORD: restaurante4312
+      POSTGRES_DB: restaurante
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres_data:

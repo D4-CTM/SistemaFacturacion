@@ -18,7 +18,7 @@ public class SQLConnection {
 
     public SQLConnection(final String _username, final String _password) {
         hikari = new HikariDataSource();
-        hikari.setJdbcUrl("jdbc:postgresql://localhost/restaurante");
+        hikari.setJdbcUrl("jdbc:postgresql://localhost:5440/restaurante");
         hikari.setUsername(_username);
         hikari.setPassword(_password);
     }
