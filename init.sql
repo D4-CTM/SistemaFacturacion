@@ -20,4 +20,3 @@ CREATE TABLE recetas (
     FOREIGN KEY (id_ingrediente) REFERENCES ingredientes(id) ON DELETE CASCADE,
     FOREIGN KEY (id_plato) REFERENCES platos(id) ON DELETE CASCADE
 );
-

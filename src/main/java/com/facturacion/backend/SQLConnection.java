@@ -174,7 +174,7 @@ public class SQLConnection {
         return "";
     }
 
-    public String getUnityOf(String ingredientName) {
+    public String getUnitOf(String ingredientName) {
         String sql = "SELECT unidad FROM ingredientes WHERE nombre = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

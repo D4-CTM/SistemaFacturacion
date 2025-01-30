@@ -136,7 +136,7 @@ public class PlateDialog {
     }
 
     public String getUnitOf(String ingredientName) {
-        return sql.getUnityOf(ingredientName);
+        return sql.getUnitOf(ingredientName);
     }
 
     public LinkedList<String> getIngredientsNames() {
@@ -174,7 +174,7 @@ public class PlateDialog {
         String unit;
         for (final RecipeIngredient recipe : recipeList) {
             recipe.ingredient_name = sql.getNameOf(recipe.ingredient_id, Items.Ingredient);
-            unit = sql.getUnityOf(recipe.ingredient_name);
+            unit = sql.getUnitOf(recipe.ingredient_name);
             recipePNL = new RecipeIngredientPanel(this, recipe.ingredient_name, recipe.ingredient_needed, unit, recipeIngredientDMSN);
             recipeIngredientPanel.add(recipePNL);
         }

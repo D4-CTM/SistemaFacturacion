@@ -56,7 +56,7 @@ public class RecipeIngredientPanel extends JPanel{
 
             Object option = JOptionPane.showInputDialog(null, "¿Que ingrediente es necesario para realizar esta receta?", "Elegir ingredients", JOptionPane.INFORMATION_MESSAGE, null, list.toArray(), 0);
             if (option == null) return ;
-            String unit = sql.getUnityOf(option.toString());
+            String unit = sql.getUnitOf(option.toString());
             
             plateDialog.addToRecipePanel(new RecipeIngredientPanel(plateDialog, option.toString(), 0.1f, unit, panelSize));
         });
